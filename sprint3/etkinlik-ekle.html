@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Etkinlik Ekle</title>
+  <link rel="stylesheet" href="css/2311012017.css">
+</head>
+<body>
+
+  <header>
+    <h1>Etkinlik Ekle</h1>
+    <nav>
+      <a href="index.html">Ana Sayfa</a>
+      <a href="etkinlikler.html">Tüm Etkinlikler</a>
+      <a href="etkinlik-ekle.html" class="active">Ekle</a>
+      <a href="etkinlik-guncelle.html">Güncelle</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Yeni Etkinlik Kaydı</h2>
+    <form action="#" method="post" novalidate>
+      <p>
+        <label for="etkinlik-adi">Etkinlik Adı:</label>
+        <input type="text" id="etkinlik-adi" name="etkinlik-adi" required>
+      </p>
+
+      <p>
+        <label for="kategori">Kategori:</label>
+        <select id="kategori" name="kategori" required>
+          <option value="">Seçiniz</option>
+          <option value="seminer">Seminer</option>
+          <option value="atolye">Atölye</option>
+          <option value="konferans">Konferans</option>
+        </select>
+      </p>
+
+      <p>
+        <label for="tarih">Tarih:</label>
+        <input type="date" id="tarih" name="tarih" required>
+      </p>
+
+      <p>
+        <label for="aciklama">Açıklama:</label>
+        <textarea id="aciklama" name="aciklama" rows="4" required></textarea>
+      </p>
+
+      <p>
+        <button type="submit">Kaydet</button>
+      </p>
+    </form>
+  </main>
+
+  <footer>
+    <p>Hasan Bahadır Yıldız (2311012017) · 2026</p>
+  </footer>
+
+  <script src="js/form-validation.js"></script>
+</body>
+</html>
