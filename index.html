@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kampüs Etkinlikleri - Hasan Bahadır Yıldız</title>
+  <style>
+    :root {
+      --primary: #0d9488;
+      --bg: #f0fdf4;
+      --card-bg: #ffffff;
+      --text: #134e4a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      background: var(--card-bg);
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      border: 1px solid #ccfbf1;
+    }
+    h1 { font-size: 1.8rem; color: #115e59; margin-bottom: 8px; }
+    p.student-info { color: #5eead4; background: #115e59; display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; margin-bottom: 24px; }
+    .sprint-links { display: flex; flex-direction: column; gap: 12px; }
+    .sprint-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: #f0fdf4;
+      border: 1px solid #99f6e4;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .sprint-card:hover {
+      background: var(--primary);
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+    .tag { font-size: 0.8rem; opacity: 0.8; }
+    footer { margin-top: 24px; font-size: 0.85rem; color: #0f766e; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Kampüs Etkinlikleri</h1>
+    <p class="student-info">Hasan Bahadır Yıldız · 2311012017</p>
+
+    <div class="sprint-links">
+      <a href="./sprint1/index.html" class="sprint-card">
+        <span>Sprint 1</span>
+        <span class="tag">HTML Temelleri &rarr;</span>
+      </a>
+      <a href="./sprint2/index.html" class="sprint-card">
+        <span>Sprint 2</span>
+        <span class="tag">CSS Grid & Responsive &rarr;</span>
+      </a>
+      <a href="./sprint3/index.html" class="sprint-card">
+        <span>Sprint 3 (Son Sürüm)</span>
+        <span class="tag">JS Doğrulama & Filtreleme &rarr;</span>
+      </a>
+    </div>
+
+    <footer>Web Teknolojileri ve Programlama · 2026</footer>
+  </div>
+
+</body>
+</html>
