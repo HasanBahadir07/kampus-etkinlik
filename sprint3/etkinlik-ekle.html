@@ -2,60 +2,67 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Etkinlik Ekle</title>
   <link rel="stylesheet" href="css/2311012017.css">
+  <script type="module" src="js/event-form.js"></script>
 </head>
 <body>
-
   <header>
-    <h1>Etkinlik Ekle</h1>
+    <h1>Kampüs Etkinlikleri</h1>
     <nav>
       <a href="index.html">Ana Sayfa</a>
-      <a href="etkinlikler.html">Tüm Etkinlikler</a>
+      <a href="etkinlikler.html">Etkinlikler</a>
       <a href="etkinlik-ekle.html" class="active">Ekle</a>
-      <a href="etkinlik-guncelle.html">Güncelle</a>
     </nav>
   </header>
 
   <main>
-    <h2>Yeni Etkinlik Kaydı</h2>
-    <form action="#" method="post" novalidate>
+    <h2>Yeni Etkinlik Ekle</h2>
+    <form id="etkinlik-formu" novalidate>
       <p>
-        <label for="etkinlik-adi">Etkinlik Adı:</label>
-        <input type="text" id="etkinlik-adi" name="etkinlik-adi" required>
+        <label for="ad">Etkinlik Adı:</label>
+        <input type="text" id="ad" name="ad">
+        <span id="ad-hata" class="hata-metni"></span>
       </p>
-
       <p>
         <label for="kategori">Kategori:</label>
-        <select id="kategori" name="kategori" required>
+        <select id="kategori" name="kategori">
           <option value="">Seçiniz</option>
-          <option value="seminer">Seminer</option>
-          <option value="atolye">Atölye</option>
-          <option value="konferans">Konferans</option>
+          <option value="Seminer">Seminer</option>
+          <option value="Atölye">Atölye</option>
+          <option value="Konferans">Konferans</option>
+          <option value="Konser">Konser</option>
         </select>
+        <span id="kategori-hata" class="hata-metni"></span>
       </p>
-
       <p>
         <label for="tarih">Tarih:</label>
-        <input type="date" id="tarih" name="tarih" required>
+        <input type="date" id="tarih" name="tarih">
+        <span id="tarih-hata" class="hata-metni"></span>
       </p>
-
+      <p>
+        <label for="saat">Saat:</label>
+        <input type="time" id="saat" name="saat">
+        <span id="saat-hata" class="hata-metni"></span>
+      </p>
+      <p>
+        <label for="yer">Yer:</label>
+        <input type="text" id="yer" name="yer">
+        <span id="yer-hata" class="hata-metni"></span>
+      </p>
+      <p>
+        <label for="kontenjan">Kontenjan:</label>
+        <input type="number" id="kontenjan" name="kontenjan">
+        <span id="kontenjan-hata" class="hata-metni"></span>
+      </p>
       <p>
         <label for="aciklama">Açıklama:</label>
-        <textarea id="aciklama" name="aciklama" rows="4" required></textarea>
+        <textarea id="aciklama" name="aciklama" rows="4"></textarea>
+        <span id="aciklama-hata" class="hata-metni"></span>
       </p>
-
-      <p>
-        <button type="submit">Kaydet</button>
-      </p>
+      <button type="submit">Kaydet</button>
     </form>
+    <div id="form-mesaj"></div>
   </main>
-
-  <footer>
-    <p>Hasan Bahadır Yıldız (2311012017) · 2026</p>
-  </footer>
-
-  <script src="js/form-validation.js"></script>
 </body>
 </html>
