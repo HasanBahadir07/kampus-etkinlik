@@ -228,3 +228,62 @@ footer {
   overflow-x: auto;
   font-family: monospace;
 }
+/* ====================================================
+   MOBİL BİÇİMLENDİRME (RESPONSIVE FIX)
+   ==================================================== */
+
+/* Tüm Elemanların Ekrana Sığmasını Sağlar */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden; /* Sağa kaymayı engeller */
+  margin: 0;
+  padding: 0;
+}
+
+/* Kapsayıcı ve Ana Alan Mobil Sınırlandırması */
+main, header, footer, .container {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+  box-sizing: border-box !important;
+}
+
+/* Etkinlik Kartları Grid Yapısı (Mobilde Tek Sütun) */
+.etkinlik-listesi, #events-grid, #etkinlik-listesi {
+  display: grid !important;
+  grid-template-columns: 1fr !important; /* Mobilde Tek Sütun */
+  gap: 16px;
+  width: 100%;
+}
+
+/* Tablet ve Masaüstü Ekranlar İçin Çoklu Sütun (768px üzeri) */
+@media (min-width: 768px) {
+  .etkinlik-listesi, #events-grid, #etkinlik-listesi {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+  }
+}
+
+/* Form ve Arama Elemanları Mobilde Tam Genişlik */
+form, input, select, textarea, button {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.filtre, .search-container {
+  display: flex !important;
+  flex-direction: column !important; /* Mobilde alt alta */
+  gap: 10px;
+  width: 100%;
+}
+
+@media (min-width: 600px) {
+  .filtre, .search-container {
+    flex-direction: row !important; /* Geniş ekranda yan yana */
+  }
+}
