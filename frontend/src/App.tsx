@@ -7,7 +7,7 @@ import './App.css';
 export default function App() {
   const [events, setEvents] = useState<CampusEvent[]>(initialEvents);
   const [activePage, setActivePage] = useState<PageName>('home');
-  const [selectedCategory, setSelectedCategory] = useState<string>('Tümü');
+  const [selectedCategory, setSelectedCategory] = useState<any>('Tümü');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
