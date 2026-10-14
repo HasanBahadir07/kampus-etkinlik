@@ -183,3 +183,155 @@ function App() {
 }
 
 export default App;
+import { useState } from 'react';
+import { initialEvents } from './data/events';
+import { CampusEvent, Category } from './types/campus-event';
+import './App.css';
+
+export default function App() {
+  const [events, setEvents] = useState<CampusEvent[]>(initialEvents);
+  const [selectedCategory, setSelectedCategory] = useState<string>('Tümü');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  
+  // Güncelleme işlemi için state'ler
+  const [editingEvent, setEditingEvent] = useState<CampusEvent | null>(null);
+
+  // Filtreleme
+  const filteredEvents = events.filter((ev) => {
+    const matchesCategory = selectedCategory === 'Tümü' || ev.category === selectedCategory;
+    const matchesSearch = ev.title.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  // Güncelleme Formunu Kaydetme Fonksiyonu
+  const handleUpdateEvent = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingEvent) return;
+
+    setEvents((prev) =>
+      prev.map((ev) => (ev.id === editingEvent.id ? editingEvent : ev))
+    );
+    setEditingEvent(null); // Modalı kapat
+    alert('Etkinlik başarıyla güncellendi!');
+  };
+
+  return (
+    <div className="container">
+      <h1>Kampüs Etkinlikleri</h1>
+
+      {/* Arama ve Filtreleme */}
+      <div className="filters">
+        <input
+          type="text"
+          placeholder="Etkinlik ara..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          <option value="Tümü">Tümü</option>
+          <option value="Seminer">Seminer</option>
+          <option value="Atölye">Atölye</option>
+          <option value="Söyleşi">Söyleşi</option>
+          <option value="Yarışma">Yarışma</option>
+        </select>
+      </div>
+
+      {/* Etkinlik Listesi */}
+      <div className="event-list">
+        {filteredEvents.map((ev) => (
+          <div key={ev.id} className="event-card">
+            <h3>{ev.title}</h3>
+            <p><strong>Kategori:</strong> {ev.category}</p>
+            <p><strong>Tarih:</strong> {ev.date}</p>
+            <p><strong>Konum:</strong> {ev.location}</p>
+            <p>{ev.description}</p>
+            
+            {/* HOCANIN İSTEDİĞİ GÜNCELLEME BUTONU */}
+            <button 
+              className="edit-btn" 
+              onClick={() => setEditingEvent(ev)}
+            >
+              ✏️ Güncelle
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* GÜNCELLEME MODAL / DÜZENLEME FORMU */}
+      {editingEvent && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Etkinliği Güncelle</h2>
+            <form onSubmit={handleUpdateEvent}>
+              <label>Başlık:</label>
+              <input
+                type="text"
+                value={editingEvent.title}
+                onChange={(e) =>
+                  setEditingEvent({ ...editingEvent, title: e.target.value })
+                }
+                required
+              />
+
+              <label>Kategori:</label>
+              <select
+                value={editingEvent.category}
+                onChange={(e) =>
+                  setEditingEvent({
+                    ...editingEvent,
+                    category: e.target.value as Category,
+                  })
+                }
+              >
+                <option value="Seminer">Seminer</option>
+                <option value="Atölye">Atölye</option>
+                <option value="Söyleşi">Söyleşi</option>
+                <option value="Yarışma">Yarışma</option>
+              </select>
+
+              <label>Tarih:</label>
+              <input
+                type="text"
+                value={editingEvent.date}
+                onChange={(e) =>
+                  setEditingEvent({ ...editingEvent, date: e.target.value })
+                }
+              />
+
+              <label>Konum:</label>
+              <input
+                type="text"
+                value={editingEvent.location}
+                onChange={(e) =>
+                  setEditingEvent({ ...editingEvent, location: e.target.value })
+                }
+              />
+
+              <label>Açıklama:</label>
+              <textarea
+                value={editingEvent.description}
+                onChange={(e) =>
+                  setEditingEvent({ ...editingEvent, description: e.target.value })
+                }
+              />
+
+              <div className="modal-actions">
+                <button type="submit" className="save-btn">Kaydet</button>
+                <button
+                  type="button"
+                  className="cancel-btn"
+                  onClick={() => setEditingEvent(null)}
+                >
+                  İptal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
