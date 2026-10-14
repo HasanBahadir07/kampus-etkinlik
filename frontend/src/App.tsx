@@ -1,209 +1,27 @@
-import { useState } from "react";
-import "./App.css";
-import { events } from "./data/events";
-import type { CampusEvent, Category, PageName } from "./types/campus-event";
-import {
-  filterByCategory,
-  findEventById,
-  formatDate,
-  searchEvents,
-} from "./utils/filter-events";
-
-function App() {
-  const [page, setPage] = useState<PageName>("home");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  const [searchText, setSearchText] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<Category | "">("");
-
-  function go(next: PageName, id: string | null = null) {
-    setPage(next);
-    setSelectedId(id);
-  }
-
-  const upcoming = [...events]
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(0, 2);
-
-  const filteredEvents = filterByCategory(
-    searchEvents(events, searchText),
-    selectedCategory
-  );
-
-  const categories: Category[] = [
-    ...new Set(events.map((e) => e.category)),
-  ] as Category[];
-
-  function renderCard(event: CampusEvent) {
-    return (
-      <article className="kart" key={event.id}>
-        <img
-          src={event.image || "/afis.svg"}
-          alt={event.title}
-          className="kart-gorsel"
-        />
-        <div className="kart-icerik">
-          <span className="kategori-etiketi">{event.category}</span>
-          <h2>{event.title}</h2>
-          <p className="tarih-konum">
-            📅 {formatDate(event.date)} - 🕒 {event.time} | 📍 {event.location}
-          </p>
-          <p className="kontenjan">Kontenjan: {event.capacity} Kişi</p>
-          <p>{event.description}</p>
-          <button
-            className="buton"
-            onClick={() => go("detail", event.id)}
-          >
-            Detayları Gör
-          </button>
-        </div>
-      </article>
-    );
-  }
-
-  const selectedEvent = selectedId ? findEventById(events, selectedId) : null;
-
-  return (
-    <>
-      <header className="site-baslik">
-        <h1>Kampüs Etkinlikleri</h1>
-      </header>
-
-      <nav className="menu">
-        <ul>
-          <li>
-            <a
-              href="#home"
-              aria-current={page === "home" ? "page" : undefined}
-              onClick={(e) => {
-                e.preventDefault();
-                go("home");
-              }}
-            >
-              Ana Sayfa
-            </a>
-          </li>
-          <li>
-            <a
-              href="#events"
-              aria-current={page === "events" ? "page" : undefined}
-              onClick={(e) => {
-                e.preventDefault();
-                go("events");
-              }}
-            >
-              Etkinlikler
-            </a>
-          </li>
-        </ul>
-      </nav>
-
-      <main>
-        {page === "home" && (
-          <section className="sayfa-blok">
-            <h2>Yaklaşan Etkinlikler</h2>
-            <section className="etkinlik-listesi">
-              {upcoming.map(renderCard)}
-            </section>
-          </section>
-        )}
-
-        {page === "events" && (
-          <section className="sayfa-blok">
-            <h2>Tüm Etkinlikler</h2>
-            <div className="filtre-alani">
-              <input
-                type="text"
-                placeholder="Etkinlik ara..."
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                className="arama-input"
-              />
-              <select
-                value={selectedCategory}
-                onChange={(e) =>
-                  setSelectedCategory(e.target.value as Category | "")
-                }
-                className="kategori-select"
-              >
-                <option value="">Tüm Kategoriler</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <p className="sonuc-bilgisi">
-              {filteredEvents.length === 0
-                ? "Etkinlik bulunamadı."
-                : `${filteredEvents.length} etkinlik listeleniyor.`}
-            </p>
-
-            <section className="etkinlik-listesi">
-              {filteredEvents.map(renderCard)}
-            </section>
-          </section>
-        )}
-
-        {page === "detail" && (
-          <section className="sayfa-blok">
-            <button className="buton ikincil" onClick={() => go("events")}>
-              ← Etkinliklere Dön
-            </button>
-
-            {selectedEvent ? (
-              <article className="detay-kart">
-                <h1>{selectedEvent.title}</h1>
-                <span className="kategori-etiketi">{selectedEvent.category}</span>
-                <p>
-                  <strong>Tarih & Saat:</strong> {formatDate(selectedEvent.date)} - {selectedEvent.time}
-                </p>
-                <p>
-                  <strong>Konum:</strong> {selectedEvent.location}
-                </p>
-                <p>
-                  <strong>Kontenjan:</strong> {selectedEvent.capacity} Kişi
-                </p>
-                <p className="detay-aciklama">{selectedEvent.description}</p>
-              </article>
-            ) : (
-              <p>Etkinlik bulunamadı.</p>
-            )}
-          </section>
-        )}
-      </main>
-
-      <footer>
-        <p>&copy; 2026 Kampüs Etkinlikleri. Tüm hakları saklıdır.</p>
-      </footer>
-    </>
-  );
-}
-
-export default App;
 import { useState } from 'react';
-import { initialEvents } from './data/events';
-import { CampusEvent, Category } from './types/campus-event';
+import { events as initialEvents } from './data/events';
+import type { CampusEvent, Category, PageName } from './types/campus-event';
+import { searchEvents, filterByCategory } from './utils/filter-events';
 import './App.css';
 
 export default function App() {
   const [events, setEvents] = useState<CampusEvent[]>(initialEvents);
+  const [activePage, setActivePage] = useState<PageName>('home');
   const [selectedCategory, setSelectedCategory] = useState<string>('Tümü');
   const [searchTerm, setSearchTerm] = useState<string>('');
-  
-  // Güncelleme işlemi için state'ler
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+
+  // Güncellenecek etkinlik state'i
   const [editingEvent, setEditingEvent] = useState<CampusEvent | null>(null);
 
-  // Filtreleme
-  const filteredEvents = events.filter((ev) => {
-    const matchesCategory = selectedCategory === 'Tümü' || ev.category === selectedCategory;
-    const matchesSearch = ev.title.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  // Filtreleme işlemleri
+  const searchedEvents = searchEvents(events, searchTerm);
+  const filteredEvents = filterByCategory(searchedEvents, selectedCategory);
 
-  // Güncelleme Formunu Kaydetme Fonksiyonu
+  // Detay sayfası için seçili etkinlik
+  const selectedEvent = events.find((ev) => ev.id === selectedEventId);
+
+  // Etkinlik Güncelleme Fonksiyonu
   const handleUpdateEvent = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingEvent) return;
@@ -211,62 +29,169 @@ export default function App() {
     setEvents((prev) =>
       prev.map((ev) => (ev.id === editingEvent.id ? editingEvent : ev))
     );
-    setEditingEvent(null); // Modalı kapat
+    setEditingEvent(null);
     alert('Etkinlik başarıyla güncellendi!');
   };
 
   return (
-    <div className="container">
-      <h1>Kampüs Etkinlikleri</h1>
+    <div className="app-container">
+      {/* Üst Navigasyon */}
+      <header className="navbar">
+        <h1 className="logo" onClick={() => setActivePage('home')}>
+          🎓 Kampüs Etkinlikleri
+        </h1>
+        <nav>
+          <button
+            className={activePage === 'home' ? 'active' : ''}
+            onClick={() => setActivePage('home')}
+          >
+            Ana Sayfa
+          </button>
+          <button
+            className={activePage === 'events' ? 'active' : ''}
+            onClick={() => setActivePage('events')}
+          >
+            Etkinlikler
+          </button>
+        </nav>
+      </header>
 
-      {/* Arama ve Filtreleme */}
-      <div className="filters">
-        <input
-          type="text"
-          placeholder="Etkinlik ara..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-        >
-          <option value="Tümü">Tümü</option>
-          <option value="Seminer">Seminer</option>
-          <option value="Atölye">Atölye</option>
-          <option value="Söyleşi">Söyleşi</option>
-          <option value="Yarışma">Yarışma</option>
-        </select>
-      </div>
+      {/* İÇERİK SAYFALARI */}
+      <main className="main-content">
+        {/* 1. ANA SAYFA */}
+        {activePage === 'home' && (
+          <section className="home-page">
+            <div className="hero">
+              <h2>Kampüsteki En Güncel Etkinlikleri Keşfet!</h2>
+              <p>Seminerler, atölyeler, söyleşiler ve yarışmalar seni bekliyor.</p>
+              <button
+                className="cta-btn"
+                onClick={() => setActivePage('events')}
+              >
+                Tüm Etkinlikleri Gör
+              </button>
+            </div>
 
-      {/* Etkinlik Listesi */}
-      <div className="event-list">
-        {filteredEvents.map((ev) => (
-          <div key={ev.id} className="event-card">
-            <h3>{ev.title}</h3>
-            <p><strong>Kategori:</strong> {ev.category}</p>
-            <p><strong>Tarih:</strong> {ev.date}</p>
-            <p><strong>Konum:</strong> {ev.location}</p>
-            <p>{ev.description}</p>
-            
-            {/* HOCANIN İSTEDİĞİ GÜNCELLEME BUTONU */}
-            <button 
-              className="edit-btn" 
-              onClick={() => setEditingEvent(ev)}
-            >
-              ✏️ Güncelle
+            <h3>Öne Çıkan Etkinlikler</h3>
+            <div className="event-grid">
+              {events.slice(0, 3).map((ev) => (
+                <div key={ev.id} className="event-card">
+                  <span className="badge">{ev.category}</span>
+                  <h3>{ev.title}</h3>
+                  <p>📅 {ev.date} - {ev.time}</p>
+                  <p>📍 {ev.location}</p>
+                  <button
+                    className="detail-btn"
+                    onClick={() => {
+                      setSelectedEventId(ev.id);
+                      setActivePage('detail');
+                    }}
+                  >
+                    Detayları Gör
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 2. ETKİNLİKLER LİSTESİ SAYFASI */}
+        {activePage === 'events' && (
+          <section className="events-page">
+            <h2>Tüm Etkinlikler</h2>
+
+            {/* Arama ve Filtre Paneli */}
+            <div className="filter-bar">
+              <input
+                type="text"
+                placeholder="Etkinlik adı ara..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="Tümü">Tüm Kategoriler</option>
+                <option value="Seminer">Seminer</option>
+                <option value="Atölye">Atölye</option>
+                <option value="Söyleşi">Söyleşi</option>
+                <option value="Yarışma">Yarışma</option>
+              </select>
+            </div>
+
+            {/* Liste */}
+            <div className="event-grid">
+              {filteredEvents.length > 0 ? (
+                filteredEvents.map((ev) => (
+                  <div key={ev.id} className="event-card">
+                    <span className="badge">{ev.category}</span>
+                    <h3>{ev.title}</h3>
+                    <p>📅 {ev.date} - {ev.time}</p>
+                    <p>📍 {ev.location}</p>
+                    <div className="card-actions">
+                      <button
+                        className="detail-btn"
+                        onClick={() => {
+                          setSelectedEventId(ev.id);
+                          setActivePage('detail');
+                        }}
+                      >
+                        Detay
+                      </button>
+
+                      {/* HOCANIN İSTEDİĞİ GÜNCELLEME BUTONU */}
+                      <button
+                        className="edit-btn"
+                        onClick={() => setEditingEvent(ev)}
+                      >
+                        ✏️ Güncelle
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p>Aradığınız kriterlere uygun etkinlik bulunamadı.</p>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* 3. ETKİNLİK DETAY SAYFASI */}
+        {activePage === 'detail' && selectedEvent && (
+          <section className="detail-page">
+            <button className="back-btn" onClick={() => setActivePage('events')}>
+              ← Etkinliklere Dön
             </button>
-          </div>
-        ))}
-      </div>
+            <div className="detail-card">
+              <span className="badge">{selectedEvent.category}</span>
+              <h2>{selectedEvent.title}</h2>
+              <p className="description">{selectedEvent.description}</p>
+              <div className="info">
+                <p><strong>📅 Tarih & Saat:</strong> {selectedEvent.date} ({selectedEvent.time})</p>
+                <p><strong>📍 Konum:</strong> {selectedEvent.location}</p>
+                <p><strong>👥 Kontenjan:</strong> {selectedEvent.capacity} Kişi</p>
+              </div>
 
-      {/* GÜNCELLEME MODAL / DÜZENLEME FORMU */}
+              <button
+                className="edit-btn"
+                style={{ marginTop: '15px' }}
+                onClick={() => setEditingEvent(selectedEvent)}
+              >
+                ✏️ Bu Etkinliği Güncelle
+              </button>
+            </div>
+          </section>
+        )}
+      </main>
+
+      {/* GÜNCELLEME MODAL / POPUP */}
       {editingEvent && (
         <div className="modal-overlay">
           <div className="modal">
             <h2>Etkinliği Güncelle</h2>
             <form onSubmit={handleUpdateEvent}>
-              <label>Başlık:</label>
+              <label>Etkinlik Başlığı:</label>
               <input
                 type="text"
                 value={editingEvent.title}
@@ -301,6 +226,15 @@ export default function App() {
                 }
               />
 
+              <label>Saat:</label>
+              <input
+                type="text"
+                value={editingEvent.time}
+                onChange={(e) =>
+                  setEditingEvent({ ...editingEvent, time: e.target.value })
+                }
+              />
+
               <label>Konum:</label>
               <input
                 type="text"
@@ -319,7 +253,9 @@ export default function App() {
               />
 
               <div className="modal-actions">
-                <button type="submit" className="save-btn">Kaydet</button>
+                <button type="submit" className="save-btn">
+                  Kaydet
+                </button>
                 <button
                   type="button"
                   className="cancel-btn"
