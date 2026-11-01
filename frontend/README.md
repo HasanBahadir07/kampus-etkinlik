@@ -1,32 +1,16 @@
-# React + TypeScript + Vite
+https://kampus-etkinlik-sprint3.vercel.app
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+# Kampüs Etkinlikleri · frontend (Sprint 4)
 
-Currently, two official plugins are available:
+Vite + React + TypeScript. Çalıştırmak için: `npm install`, `npm run dev`.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+- `package.json`: proje adı, komutlar (dev, build) ve paket listesi.
+- `index.html`: tek HTML sayfası, içinde boş `div#root` var.
+- `src/main.tsx`: React'i başlatır, App'i root'a çizer.
+- `src/App.tsx`: 5 sayfanın hepsi burada; sayfa geçişi state ile yapılır.
+- `src/App.css`: tüm stiller; renk ve font öğrenci numarasından gelir.
+- `src/index.css`: genel stil; bu sprintte boş.
+- `src/types/campus-event.ts`: Category ve CampusEvent tipleri.
+- `src/data/events.ts`: 6 etkinlik verisi.
+- `src/utils/filter-events.ts`: arama, kategori filtresi ve id ile bulma fonksiyonları.
+- `public/`: olduğu gibi kopyalanan dosyalar (afiş).

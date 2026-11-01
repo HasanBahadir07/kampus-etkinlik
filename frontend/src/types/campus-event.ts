@@ -1,14 +1,12 @@
 export type Category = "Seminer" | "Atölye" | "Söyleşi" | "Yarışma";
 
-export type PageName = "home" | "events" | "detail";
-
 export interface CampusEvent {
   id: string;
   title: string;
   category: Category;
   capacity: number;
-  date: string;
-  time: string;
+  date: string; // YYYY-AA-GG
+  time: string; // SS:DD
   location: string;
   description: string;
   image?: string;

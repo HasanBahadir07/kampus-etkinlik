@@ -1,273 +1,290 @@
-import { useState } from 'react';
-import { events as initialEvents } from './data/events';
-import type { CampusEvent, Category, PageName } from './types/campus-event';
-import { searchEvents, filterByCategory } from './utils/filter-events';
-import './App.css';
+import { useEffect, useState } from "react";
+import "./App.css";
+import { events } from "./data/events";
+import type { CampusEvent, Category } from "./types/campus-event";
+import {
+  filterByCategory,
+  findEventById,
+  searchEvents,
+} from "./utils/filter-events";
 
-export default function App() {
-  const [events, setEvents] = useState<CampusEvent[]>(initialEvents);
-  const [activePage, setActivePage] = useState<PageName>('home');
-  const [selectedCategory, setSelectedCategory] = useState<any>('Tümü');
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+type PageName = "home" | "events" | "detail" | "add" | "update";
 
-  // Güncellenecek etkinlik state'i
-  const [editingEvent, setEditingEvent] = useState<CampusEvent | null>(null);
+const SITE_NAME = "Kampüs Etkinlikleri";
 
-  // Filtreleme işlemleri
-  const searchedEvents = searchEvents(events, searchTerm);
-  const filteredEvents = filterByCategory(searchedEvents, selectedCategory);
+const menuItems: { name: PageName; label: string }[] = [
+  { name: "home", label: "Ana Sayfa" },
+  { name: "events", label: "Etkinlikler" },
+  { name: "add", label: "Ekle" },
+];
 
-  // Detay sayfası için seçili etkinlik
-  const selectedEvent = events.find((ev) => ev.id === selectedEventId);
+function formatDate(date: string) {
+  const [year, month, day] = date.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString("tr-TR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
 
-  // Etkinlik Güncelleme Fonksiyonu
-  const handleUpdateEvent = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingEvent) return;
+function App() {
+  const [page, setPage] = useState<PageName>("home");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [searchText, setSearchText] = useState("");
+  const [category, setCategory] = useState<Category | "">("");
 
-    setEvents((prev) =>
-      prev.map((ev) => (ev.id === editingEvent.id ? editingEvent : ev))
+  // Her çizimde hesaplanan değerler (state değil)
+  const upcoming = [...events]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(0, 2);
+  const filtered = filterByCategory(searchEvents(events, searchText), category);
+  const categories = [...new Set(events.map((e) => e.category))];
+  const selected = selectedId ? findEventById(events, selectedId) : undefined;
+
+  function go(next: PageName, id: string | null = null) {
+    setPage(next);
+    setSelectedId(id);
+  }
+
+  // Sayfaya göre başlık ve alt yazı
+  let title = SITE_NAME;
+  let text: string | undefined;
+  if (page === "home") {
+    text = "Fakültedeki seminer, atölye ve söyleşileri tek yerden takip edin.";
+  } else if (page === "events") {
+    title = "Tüm Etkinlikler";
+    text = "Kampüste düzenlenen seminer, atölye, söyleşi ve yarışmalar.";
+  } else if (page === "detail") {
+    title = selected ? selected.title : "Etkinlik bulunamadı";
+  } else if (page === "add") {
+    title = "Etkinlik Ekle";
+  } else {
+    title = "Etkinlik Güncelle";
+  }
+
+  const tabTitle = title === SITE_NAME ? SITE_NAME : `${SITE_NAME} — ${title}`;
+  useEffect(() => {
+    document.title = tabTitle;
+  }, [tabTitle]);
+
+  function renderCard(event: CampusEvent) {
+    return (
+      <article className="kart" key={event.id}>
+        <h2>{event.title}</h2>
+        <span className="kategori">{event.category}</span>
+        <p>
+          <strong>Tarih:</strong> {formatDate(event.date)}, {event.time}
+        </p>
+        <p>
+          <strong>Yer:</strong> {event.location}
+        </p>
+        <p>
+          <strong>Kontenjan:</strong> {event.capacity} kişi
+        </p>
+        <p>{event.description}</p>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            go("detail", event.id);
+          }}
+        >
+          Detayları gör &rarr;
+        </a>
+      </article>
     );
-    setEditingEvent(null);
-    alert('Etkinlik başarıyla güncellendi!');
-  };
+  }
 
   return (
-    <div className="app-container">
-      {/* Üst Navigasyon */}
-      <header className="navbar">
-        <h1 className="logo" onClick={() => setActivePage('home')}>
-          🎓 Kampüs Etkinlikleri
-        </h1>
-        <nav>
-          <button
-            className={activePage === 'home' ? 'active' : ''}
-            onClick={() => setActivePage('home')}
-          >
-            Ana Sayfa
-          </button>
-          <button
-            className={activePage === 'events' ? 'active' : ''}
-            onClick={() => setActivePage('events')}
-          >
-            Etkinlikler
-          </button>
-        </nav>
+    <>
+      <header className="site-baslik">
+        <h1>{title}</h1>
+        {text && <p>{text}</p>}
       </header>
+      <nav className="menu" aria-label="Ana menü">
+        {menuItems.map((item) => (
+          <a
+            key={item.name}
+            href="#"
+            aria-current={page === item.name ? "page" : undefined}
+            onClick={(e) => {
+              e.preventDefault();
+              go(item.name);
+            }}
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
 
-      {/* İÇERİK SAYFALARI */}
-      <main className="main-content">
-        {/* 1. ANA SAYFA */}
-        {activePage === 'home' && (
-          <section className="home-page">
-            <div className="hero">
-              <h2>Kampüsteki En Güncel Etkinlikleri Keşfet!</h2>
-              <p>Seminerler, atölyeler, söyleşiler ve yarışmalar seni bekliyor.</p>
-              <button
-                className="cta-btn"
-                onClick={() => setActivePage('events')}
-              >
-                Tüm Etkinlikleri Gör
-              </button>
-            </div>
-
-            <h3>Öne Çıkan Etkinlikler</h3>
-            <div className="event-grid">
-              {events.slice(0, 3).map((ev) => (
-                <div key={ev.id} className="event-card">
-                  <span className="badge">{ev.category}</span>
-                  <h3>{ev.title}</h3>
-                  <p>📅 {ev.date} - {ev.time}</p>
-                  <p>📍 {ev.location}</p>
-                  <button
-                    className="detail-btn"
-                    onClick={() => {
-                      setSelectedEventId(ev.id);
-                      setActivePage('detail');
-                    }}
-                  >
-                    Detayları Gör
-                  </button>
-                </div>
-              ))}
-            </div>
-          </section>
+      <main>
+        {page === "home" && (
+          <>
+            <h2>Yaklaşan 2 Etkinlik</h2>
+            <section className="etkinlik-listesi">
+              {upcoming.map(renderCard)}
+            </section>
+            <button className="buton" onClick={() => go("events")}>
+              Tüm etkinlikleri gör
+            </button>
+          </>
         )}
 
-        {/* 2. ETKİNLİKLER LİSTESİ SAYFASI */}
-        {activePage === 'events' && (
-          <section className="events-page">
-            <h2>Tüm Etkinlikler</h2>
+        {page === "events" && (
+          <>
+            <form className="filtre" onSubmit={(e) => e.preventDefault()}>
+              <div>
+                <label htmlFor="arama">Etkinlik ara</label>
+                <input
+                  id="arama"
+                  type="search"
+                  value={searchText}
+                  placeholder="Örn. atölye, kariyer"
+                  onChange={(e) => setSearchText(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="kategori-filtre">Kategori</label>
+                <select
+                  id="kategori-filtre"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value as Category | "")}
+                >
+                  <option value="">Tümü</option>
+                  {categories.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </form>
+            {filtered.length > 0 && (
+              <p className="sonuc">{filtered.length} etkinlik listeleniyor.</p>
+            )}
+            {filtered.length === 0 ? (
+              <p className="sonuc">
+                Aradığınız kriterlere uygun etkinlik bulunamadı.
+              </p>
+            ) : (
+              <section className="etkinlik-listesi">
+                {filtered.map(renderCard)}
+              </section>
+            )}
+          </>
+        )}
 
-            {/* Arama ve Filtre Paneli */}
-            <div className="filter-bar">
-              <input
-                type="text"
-                placeholder="Etkinlik adı ara..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+        {page === "detail" && !selected && (
+          <div className="hata-kutusu">
+            <h2>Etkinlik bulunamadı</h2>
+            <p>Aradığınız etkinlik mevcut değil.</p>
+            <button className="buton" onClick={() => go("events")}>
+              &larr; Listeye dön
+            </button>
+          </div>
+        )}
+
+        {page === "detail" && selected && (
+          <article className="detay">
+            {selected.image && (
+              <figure>
+                <img src={selected.image} alt={`${selected.title} afişi`} />
+                <figcaption>{selected.title} afişi</figcaption>
+              </figure>
+            )}
+            <section className="kunye-kutusu">
+              <h2>Etkinlik Künyesi</h2>
+              <dl className="kunye">
+                <dt>Tarih</dt>
+                <dd>
+                  {formatDate(selected.date)}, {selected.time}
+                </dd>
+                <dt>Yer</dt>
+                <dd>{selected.location}</dd>
+                <dt>Kategori</dt>
+                <dd>{selected.category}</dd>
+                <dt>Kontenjan</dt>
+                <dd>{selected.capacity} kişi</dd>
+              </dl>
+            </section>
+            <section className="aciklama">
+              <h2>Açıklama</h2>
+              <p>{selected.description}</p>
+            </section>
+            <div className="islemler">
+              <button className="buton" onClick={() => go("events")}>
+                &larr; Listeye dön
+              </button>
+              <button
+                className="buton"
+                onClick={() => go("update", selected.id)}
               >
-                <option value="Tümü">Tüm Kategoriler</option>
+                Bu etkinliği güncelle
+              </button>
+            </div>
+          </article>
+        )}
+
+        {(page === "add" || page === "update") && (
+          <form className="form" onSubmit={(e) => e.preventDefault()}>
+            <p className="not">Bu sprintte form sadece görünüm; kayıt yapılmaz.</p>
+            <div>
+              <label htmlFor="title">Etkinlik Adı</label>
+              <input
+                id="title"
+                type="text"
+                maxLength={80}
+                placeholder="Örn. Kariyer Günleri 2026"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="category">Kategori</label>
+              <select id="category" required>
+                <option value="">Seçiniz</option>
                 <option value="Seminer">Seminer</option>
                 <option value="Atölye">Atölye</option>
                 <option value="Söyleşi">Söyleşi</option>
                 <option value="Yarışma">Yarışma</option>
               </select>
             </div>
-
-            {/* Liste */}
-            <div className="event-grid">
-              {filteredEvents.length > 0 ? (
-                filteredEvents.map((ev) => (
-                  <div key={ev.id} className="event-card">
-                    <span className="badge">{ev.category}</span>
-                    <h3>{ev.title}</h3>
-                    <p>📅 {ev.date} - {ev.time}</p>
-                    <p>📍 {ev.location}</p>
-                    <div className="card-actions">
-                      <button
-                        className="detail-btn"
-                        onClick={() => {
-                          setSelectedEventId(ev.id);
-                          setActivePage('detail');
-                        }}
-                      >
-                        Detay
-                      </button>
-
-                      {/* HOCANIN İSTEDİĞİ GÜNCELLEME BUTONU */}
-                      <button
-                        className="edit-btn"
-                        onClick={() => setEditingEvent(ev)}
-                      >
-                        ✏️ Güncelle
-                      </button>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p>Aradığınız kriterlere uygun etkinlik bulunamadı.</p>
-              )}
+            <div>
+              <label htmlFor="date">Tarih</label>
+              <input id="date" type="date" required />
             </div>
-          </section>
-        )}
-
-        {/* 3. ETKİNLİK DETAY SAYFASI */}
-        {activePage === 'detail' && selectedEvent && (
-          <section className="detail-page">
-            <button className="back-btn" onClick={() => setActivePage('events')}>
-              ← Etkinliklere Dön
+            <div>
+              <label htmlFor="time">Saat</label>
+              <input id="time" type="time" required />
+            </div>
+            <div>
+              <label htmlFor="location">Yer</label>
+              <input
+                id="location"
+                type="text"
+                placeholder="Örn. A Blok Konferans Salonu"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="capacity">Kontenjan</label>
+              <input id="capacity" type="number" min={1} max={1000} />
+            </div>
+            <div>
+              <label htmlFor="description">Açıklama</label>
+              <textarea id="description" rows={5} />
+            </div>
+            <button className="buton" type="submit">
+              Kaydet
             </button>
-            <div className="detail-card">
-              <span className="badge">{selectedEvent.category}</span>
-              <h2>{selectedEvent.title}</h2>
-              <p className="description">{selectedEvent.description}</p>
-              <div className="info">
-                <p><strong>📅 Tarih & Saat:</strong> {selectedEvent.date} ({selectedEvent.time})</p>
-                <p><strong>📍 Konum:</strong> {selectedEvent.location}</p>
-                <p><strong>👥 Kontenjan:</strong> {selectedEvent.capacity} Kişi</p>
-              </div>
-
-              <button
-                className="edit-btn"
-                style={{ marginTop: '15px' }}
-                onClick={() => setEditingEvent(selectedEvent)}
-              >
-                ✏️ Bu Etkinliği Güncelle
-              </button>
-            </div>
-          </section>
+          </form>
         )}
       </main>
 
-      {/* GÜNCELLEME MODAL / POPUP */}
-      {editingEvent && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Etkinliği Güncelle</h2>
-            <form onSubmit={handleUpdateEvent}>
-              <label>Etkinlik Başlığı:</label>
-              <input
-                type="text"
-                value={editingEvent.title}
-                onChange={(e) =>
-                  setEditingEvent({ ...editingEvent, title: e.target.value })
-                }
-                required
-              />
-
-              <label>Kategori:</label>
-              <select
-                value={editingEvent.category}
-                onChange={(e) =>
-                  setEditingEvent({
-                    ...editingEvent,
-                    category: e.target.value as Category,
-                  })
-                }
-              >
-                <option value="Seminer">Seminer</option>
-                <option value="Atölye">Atölye</option>
-                <option value="Söyleşi">Söyleşi</option>
-                <option value="Yarışma">Yarışma</option>
-              </select>
-
-              <label>Tarih:</label>
-              <input
-                type="text"
-                value={editingEvent.date}
-                onChange={(e) =>
-                  setEditingEvent({ ...editingEvent, date: e.target.value })
-                }
-              />
-
-              <label>Saat:</label>
-              <input
-                type="text"
-                value={editingEvent.time}
-                onChange={(e) =>
-                  setEditingEvent({ ...editingEvent, time: e.target.value })
-                }
-              />
-
-              <label>Konum:</label>
-              <input
-                type="text"
-                value={editingEvent.location}
-                onChange={(e) =>
-                  setEditingEvent({ ...editingEvent, location: e.target.value })
-                }
-              />
-
-              <label>Açıklama:</label>
-              <textarea
-                value={editingEvent.description}
-                onChange={(e) =>
-                  setEditingEvent({ ...editingEvent, description: e.target.value })
-                }
-              />
-
-              <div className="modal-actions">
-                <button type="submit" className="save-btn">
-                  Kaydet
-                </button>
-                <button
-                  type="button"
-                  className="cancel-btn"
-                  onClick={() => setEditingEvent(null)}
-                >
-                  İptal
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+      <footer>
+        <p>Hasan Bahadır Yıldız · 2311012017 · 2026</p>
+      </footer>
+    </>
   );
 }
+
+export default App;

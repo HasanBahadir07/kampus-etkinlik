@@ -1,363 +1,310 @@
-/* ====================================================
-   KAMPÜS ETKİNLİKLERİ - SPRINT 3 (Öğrenci No: 2311012017)
-   ==================================================== */
-
+/* Hasan Bahadır Yıldız — 2311012017 */
 :root {
-  --primary-color: #0d9488;    /* 2311012017 % 5 = 2 -> Teal/Emerald Yeşil */
-  --primary-hover: #0f766e;
-  --bg-color: #f0fdf4;
-  --card-bg: #ffffff;
-  --text-color: #134e4a;
-  --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; /* Son hane 7 -> Sans-serif */
+  --no: 2311012017;
+  --ton: mod(var(--no), 360); /* 2311012017 mod 360 = 297 */
+  --renk-ana: hsl(var(--ton) 65% 38%);
+  --renk-koyu: hsl(var(--ton) 65% 28%);
+  --renk-zemin: hsl(var(--ton) 30% 97%);
+  --renk-acik: hsl(var(--ton) 40% 92%);
+  --renk-cizgi: hsl(var(--ton) 20% 84%);
+  --renk-yazi: hsl(var(--ton) 30% 14%);
+  --renk-hata: #b3261e;
+  --renk-hata-zemin: #fdecea;
+  --font: "Palatino Linotype", serif; /* son hane 7 */
+  --bosluk-s: 0.5rem;
+  --bosluk-m: 1rem;
+  --bosluk-l: 1.5rem;
+  --kose: 8px;
 }
 
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 body {
-  font-family: var(--font-family);
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  margin: 0;
+  font-family: var(--font);
   line-height: 1.6;
-  padding: 20px;
+  color: var(--renk-yazi);
+  background: var(--renk-zemin);
+  overflow-wrap: anywhere;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---------- Başlık ve menü ---------- */
+.site-baslik {
+  padding: var(--bosluk-m) var(--bosluk-m) var(--bosluk-s);
+  color: #fff;
+  background: var(--renk-ana);
+}
+
+.site-baslik h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  line-height: 1.25;
+}
+
+.site-baslik p {
+  margin: var(--bosluk-s) 0 0;
+}
+
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bosluk-s);
+  padding: 0 var(--bosluk-m) var(--bosluk-m);
+  background: var(--renk-ana);
+}
+
+.menu a {
+  padding: 0.5rem 0.9rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: #fff;
+  text-decoration: none;
+  border-radius: var(--kose);
+}
+
+.menu a[aria-current="page"] {
+  color: var(--renk-ana);
+  font-weight: 700;
+  background: #fff;
+}
+
+/* ---------- İçerik ---------- */
+main {
   max-width: 1000px;
   margin: 0 auto;
-}
-
-/* Üst Bilgi ve Navigasyon */
-header {
-  background-color: #115e59;
-  color: #ffffff;
-  padding: 24px;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-header h1 {
-  font-size: 1.8rem;
-  color: #f0fdf4;
-}
-
-nav {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-nav a {
-  color: #ccfbf1;
-  text-decoration: none;
-  font-weight: 600;
-  padding: 8px 14px;
-  border-radius: 6px;
-  background-color: #134e4a;
-  transition: all 0.2s ease;
-}
-
-nav a:hover, nav a.active {
-  background-color: var(--primary-color);
-  color: #ffffff;
-}
-
-main {
-  background-color: var(--card-bg);
-  padding: 28px;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-bottom: 24px;
+  padding: var(--bosluk-m);
 }
 
 main h2 {
-  font-size: 1.4rem;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #ccfbf1;
-  padding-bottom: 8px;
-}
-
-/* Arama Kutusu */
-.search-container {
-  margin-bottom: 20px;
-}
-
-.search-container input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #99f6e4;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-
-/* Hocanın İstediği CSS Grid Kart Yapısı */
-.events-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.event-card {
-  background-color: #ffffff;
-  border: 1px solid #ccfbf1;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.event-card h3 {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-  color: #115e59;
-}
-
-.event-card .category {
-  display: inline-block;
-  background-color: #ccfbf1;
-  color: #115e59;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 12px;
-}
-
-.event-card a {
-  display: inline-block;
-  margin-top: 14px;
-  color: var(--primary-color);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.event-card a:hover {
-  text-decoration: underline;
-}
-
-/* Detay Sayfası */
-dl {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 12px 16px;
-  background-color: #f0fdf4;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #ccfbf1;
-}
-
-/* Formlar */
-form p {
-  margin-bottom: 18px;
-}
-
-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-input[type="text"], input[type="date"], select, textarea {
-  width: 100%;
-  padding: 10px 14px;
-  border: 1px solid #99f6e4;
-  border-radius: 6px;
-  font-size: 1rem;
-}
-
-button[type="submit"] {
-  background-color: var(--primary-color);
-  color: #ffffff;
-  border: none;
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-button[type="submit"]:hover {
-  background-color: var(--primary-hover);
+  margin: 0 0 var(--bosluk-m);
 }
 
 footer {
+  margin-top: var(--bosluk-l);
+  padding: var(--bosluk-m);
   text-align: center;
-  padding: 16px;
-  color: #5eead4;
-}/* SPRINT 3 - Hata ve Mesaj Kutuları */
-.hata-metni {
-  color: #dc2626;
-  font-size: 0.85rem;
-  display: block;
-  margin-top: 4px;
+  font-size: 0.9rem;
+  border-top: 1px solid var(--renk-cizgi);
 }
 
-[aria-invalid="true"] {
-  border-color: #dc2626 !important;
-  background-color: #fef2f2;
+footer p {
+  margin: 0;
+}
+
+/* ---------- Kartlar (telefon: tek sütun) ---------- */
+.etkinlik-listesi {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--bosluk-m);
+  margin-bottom: var(--bosluk-m);
+}
+
+.kart {
+  padding: var(--bosluk-m);
+  background: #fff;
+  border: 1px solid var(--renk-cizgi);
+  border-top: 4px solid var(--renk-ana);
+  border-radius: var(--kose);
+}
+
+.kart h2 {
+  margin: 0 0 var(--bosluk-s);
+  font-size: 1.2rem;
+}
+
+.kart p {
+  margin: 0.25rem 0;
+}
+
+.kart a {
+  display: inline-block;
+  margin-top: var(--bosluk-s);
+  padding: 0.5rem 0;
+  font-weight: 700;
+  color: var(--renk-ana);
+}
+
+.kategori {
+  display: inline-block;
+  padding: 0 0.6rem;
+  margin-bottom: var(--bosluk-s);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--renk-koyu);
+  background: var(--renk-acik);
+  border-radius: 999px;
+}
+
+/* ---------- Filtre ---------- */
+.filtre {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--bosluk-m);
+  padding: var(--bosluk-m);
+  margin-bottom: var(--bosluk-m);
+  background: #fff;
+  border: 1px solid var(--renk-cizgi);
+  border-radius: var(--kose);
+}
+
+.sonuc {
+  margin: 0 0 var(--bosluk-m);
+  font-weight: 700;
+  color: var(--renk-koyu);
+}
+
+/* ---------- Form alanları ---------- */
+label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  color: inherit;
+  background: #fff;
+  border: 1px solid var(--renk-cizgi);
+  border-radius: var(--kose);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.buton:focus-visible,
+.menu a:focus-visible,
+.kart a:focus-visible {
+  outline: 3px solid var(--renk-koyu);
+  outline-offset: 2px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bosluk-m);
+  max-width: 600px;
+}
+
+.not {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* ---------- Butonlar ---------- */
+.buton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.5rem 1.1rem;
+  font: inherit;
+  font-weight: 700;
+  color: #fff;
+  background: var(--renk-ana);
+  border: 0;
+  border-radius: var(--kose);
+  cursor: pointer;
+}
+
+.buton:hover {
+  background: var(--renk-koyu);
+}
+
+/* ---------- Detay ---------- */
+.detay {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--bosluk-m);
+}
+
+.detay figure {
+  margin: 0;
+}
+
+.detay figcaption {
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.detay img {
+  width: 100%;
+  border-radius: var(--kose);
+}
+
+.kunye-kutusu {
+  padding: var(--bosluk-m);
+  background: #fff;
+  border: 1px solid var(--renk-cizgi);
+  border-radius: var(--kose);
+}
+
+.kunye {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem var(--bosluk-m);
+  margin: 0;
+}
+
+.kunye dt {
+  font-weight: 700;
+}
+
+.kunye dd {
+  margin: 0;
+}
+
+.islemler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bosluk-s);
 }
 
 .hata-kutusu {
-  background-color: #fee2e2;
-  border: 1px solid #f87171;
-  color: #991b1b;
-  padding: 16px;
-  border-radius: 8px;
-  margin-top: 16px;
+  padding: var(--bosluk-m);
+  color: var(--renk-hata);
+  background: var(--renk-hata-zemin);
+  border: 1px solid var(--renk-hata);
+  border-radius: var(--kose);
 }
 
-.basari-kutusu {
-  background-color: #dcfce7;
-  border: 1px solid #4ade80;
-  color: #166534;
-  padding: 16px;
-  border-radius: 8px;
-  margin-top: 16px;
-}
+/* ---------- Geniş ekran ---------- */
+@media (min-width: 700px) {
+  .etkinlik-listesi {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-.basari-kutusu pre {
-  background-color: #f0fdf4;
-  padding: 10px;
-  border-radius: 6px;
-  overflow-x: auto;
-  font-family: monospace;
-}
-/* ====================================================
-   MOBİL BİÇİMLENDİRME (RESPONSIVE FIX)
-   ==================================================== */
+  .filtre {
+    grid-template-columns: 2fr 1fr;
+  }
 
-/* Tüm Elemanların Ekrana Sığmasını Sağlar */
-*, *::before, *::after {
-  box-sizing: border-box;
-}
+  .detay {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
 
-html, body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden; /* Sağa kaymayı engeller */
-  margin: 0;
-  padding: 0;
-}
-
-/* Kapsayıcı ve Ana Alan Mobil Sınırlandırması */
-main, header, footer, .container {
-  width: 100% !important;
-  max-width: 100% !important;
-  padding-left: 15px !important;
-  padding-right: 15px !important;
-  box-sizing: border-box !important;
-}
-
-/* Etkinlik Kartları Grid Yapısı (Mobilde Tek Sütun) */
-.etkinlik-listesi, #events-grid, #etkinlik-listesi {
-  display: grid !important;
-  grid-template-columns: 1fr !important; /* Mobilde Tek Sütun */
-  gap: 16px;
-  width: 100%;
-}
-
-/* Tablet ve Masaüstü Ekranlar İçin Çoklu Sütun (768px üzeri) */
-@media (min-width: 768px) {
-  .etkinlik-listesi, #events-grid, #etkinlik-listesi {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+  .aciklama,
+  .islemler {
+    grid-column: 1 / -1;
   }
 }
 
-/* Form ve Arama Elemanları Mobilde Tam Genişlik */
-form, input, select, textarea, button {
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.filtre, .search-container {
-  display: flex !important;
-  flex-direction: column !important; /* Mobilde alt alta */
-  gap: 10px;
-  width: 100%;
-}
-
-@media (min-width: 600px) {
-  .filtre, .search-container {
-    flex-direction: row !important; /* Geniş ekranda yan yana */
+@media (min-width: 1000px) {
+  .etkinlik-listesi {
+    grid-template-columns: repeat(3, 1fr);
   }
-}
-/* Güncelle Butonu Stili */
-.edit-btn {
-  background-color: #f59e0b;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 10px;
-}
-
-.edit-btn:hover {
-  background-color: #d97706;
-}
-
-/* Modal Popup Stili */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 500px;
-  color: #333;
-}
-
-.modal form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.modal input, .modal select, .modal textarea {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.save-btn {
-  background-color: #10b981;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.cancel-btn {
-  background-color: #ef4444;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
 }
