@@ -1,7 +1,7 @@
 /* Hasan Bahadır Yıldız — 2311012017 */
 :root {
   --no: 2311012017;
-  --ton: mod(var(--no), 360); /* 2311012017 mod 360 = 297 */
+  --ton: 297; /* 2311012017 mod 360 = 297 */
   --renk-ana: hsl(var(--ton) 65% 38%);
   --renk-koyu: hsl(var(--ton) 65% 28%);
   --renk-zemin: hsl(var(--ton) 30% 97%);
