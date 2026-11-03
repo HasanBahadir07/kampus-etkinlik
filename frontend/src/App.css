@@ -10,6 +10,8 @@
   --renk-yazi: hsl(var(--ton) 30% 14%);
   --renk-hata: #b3261e;
   --renk-hata-zemin: #fdecea;
+  --renk-basari: #1b6e3a;
+  --renk-basari-zemin: #e6f4ea;
   --font: "Palatino Linotype", serif; /* son hane 7 */
   --bosluk-s: 0.5rem;
   --bosluk-m: 1rem;
@@ -84,7 +86,8 @@ main {
   padding: var(--bosluk-m);
 }
 
-main h2 {
+main h2,
+.bolum-baslik {
   margin: 0 0 var(--bosluk-m);
 }
 
@@ -116,7 +119,7 @@ footer p {
   border-radius: var(--kose);
 }
 
-.kart h2 {
+.kart h3 {
   margin: 0 0 var(--bosluk-s);
   font-size: 1.2rem;
 }
@@ -182,6 +185,13 @@ textarea {
   border-radius: var(--kose);
 }
 
+input[aria-invalid="true"],
+select[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border-color: var(--renk-hata);
+  background: var(--renk-hata-zemin);
+}
+
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
@@ -205,6 +215,39 @@ textarea:focus-visible,
   opacity: 0.8;
 }
 
+.hata-metni {
+  display: block;
+  min-height: 1.2em;
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+  color: var(--renk-hata);
+}
+
+.mesaj {
+  margin: 0;
+  padding: var(--bosluk-s) var(--bosluk-m);
+  border-radius: var(--kose);
+}
+
+.mesaj-basari {
+  color: var(--renk-basari);
+  background: var(--renk-basari-zemin);
+  border: 1px solid var(--renk-basari);
+}
+
+.form-baglantilar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bosluk-m);
+  margin: 0;
+}
+
+.form-baglantilar a {
+  padding: 0.5rem 0;
+  font-weight: 700;
+  color: var(--renk-ana);
+}
+
 /* ---------- Butonlar ---------- */
 .buton {
   display: inline-flex;
@@ -215,6 +258,7 @@ textarea:focus-visible,
   font: inherit;
   font-weight: 700;
   color: #fff;
+  text-decoration: none;
   background: var(--renk-ana);
   border: 0;
   border-radius: var(--kose);
@@ -223,6 +267,14 @@ textarea:focus-visible,
 
 .buton:hover {
   background: var(--renk-koyu);
+}
+
+.buton-sil {
+  background: var(--renk-hata);
+}
+
+.buton-sil:hover {
+  background: #8c1d18;
 }
 
 /* ---------- Detay ---------- */
@@ -244,6 +296,10 @@ textarea:focus-visible,
 .detay img {
   width: 100%;
   border-radius: var(--kose);
+}
+
+.detay h3 {
+  margin: 0 0 var(--bosluk-s);
 }
 
 .kunye-kutusu {
@@ -282,6 +338,25 @@ textarea:focus-visible,
   border-radius: var(--kose);
 }
 
+/* ---------- Yönetim tablosu ---------- */
+.tablo {
+  width: 100%;
+  background: #fff;
+  border-collapse: collapse;
+}
+
+.tablo th,
+.tablo td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--renk-cizgi);
+}
+
+.tablo th {
+  color: #fff;
+  background: var(--renk-ana);
+}
+
 /* ---------- Geniş ekran ---------- */
 @media (min-width: 700px) {
   .etkinlik-listesi {
@@ -298,7 +373,7 @@ textarea:focus-visible,
   }
 
   .aciklama,
-  .islemler {
+  .detay .islemler {
     grid-column: 1 / -1;
   }
 }
@@ -306,5 +381,40 @@ textarea:focus-visible,
 @media (min-width: 1000px) {
   .etkinlik-listesi {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---------- Telefon: tablo satırları kart olur ---------- */
+@media (max-width: 699px) {
+  .tablo thead {
+    display: none;
+  }
+
+  .tablo,
+  .tablo tbody {
+    display: block;
+    background: transparent;
+  }
+
+  .tablo tr {
+    display: block;
+    margin-bottom: var(--bosluk-m);
+    background: #fff;
+    border: 1px solid var(--renk-cizgi);
+    border-radius: var(--kose);
+  }
+
+  .tablo td {
+    display: block;
+    border-bottom: 0;
+  }
+
+  .tablo td.islemler-hucre {
+    display: flex;
+  }
+
+  .tablo td[data-baslik]::before {
+    content: attr(data-baslik) ": ";
+    font-weight: 700;
   }
 }

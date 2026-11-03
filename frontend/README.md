@@ -1,21 +1,41 @@
-https://kampus-etkinlik-sprint3.vercel.app
+https://hasanbahadiryildiz-frontend.vercel.app
 
-# Kampüs Etkinlikleri · frontend (Sprint 5)
+# Kampüs Etkinlikleri · frontend (Sprint 6 + Vize)
 
-Vite + React + TypeScript. Çalıştırmak için: `npm install`, `npm run dev`.
+Hasan Bahadır Yıldız · 2311012017. Vite + React + TypeScript + React Router.
 
-- `package.json`: proje adı, komutlar (dev, build) ve paket listesi.
-- `index.html`: tek HTML sayfası, içinde boş `div#root` var.
-- `src/main.tsx`: React'i başlatır, App'i root'a çizer.
-- `src/App.tsx`: state'leri tutar, sayfaları ve bileşenleri bir araya getirir.
-- `src/App.css`: tüm stiller; renk ve font öğrenci numarasından gelir.
-- `src/index.css`: genel stil; boş.
-- `src/components/layout/`: Header, Navigation ve Footer bileşenleri.
-- `src/components/events/`: EventCard, EventList, EventFilter ve EventDetail bileşenleri.
-- `src/components/forms/EventForm.tsx`: ekleme ve güncelleme formu.
-- `src/types/campus-event.ts`: Category ve CampusEvent tipleri.
-- `src/types/page.ts`: PageName tipi.
-- `src/data/events.ts`: 6 etkinlik verisi.
-- `src/utils/filter-events.ts`: arama, kategori filtresi ve id ile bulma fonksiyonları.
-- `src/utils/format-date.ts`: tarihi "15 Kasım 2026" biçimine çeviren fonksiyon.
-- `public/`: olduğu gibi kopyalanan dosyalar (afiş).
+## Kurulum
+
+```
+npm install
+npm run dev
+```
+
+Üretim derlemesi için `npm run build`, derlemeyi denemek için `npm run preview`.
+
+## Route listesi
+
+| Adres | Sayfa |
+| ----- | ----- |
+| `/` | HomePage: yaklaşan 2 etkinlik |
+| `/events` | EventsPage: liste, arama, kategori filtresi |
+| `/events/:id` | EventDetailPage: etkinlik detayı |
+| `/login` | LoginPage |
+| `/register` | RegisterPage |
+| `/forgot-password` | ForgotPasswordPage |
+| `/admin` | AdminPage: tablo, düzenle, sil |
+| `/admin/new` | AddEventPage |
+| `/admin/:id/edit` | EditEventPage |
+| `*` | NotFoundPage |
+
+## Klasör yapısı
+
+- `src/components/layout/`: Header, Navigation (NavLink), Footer.
+- `src/components/events/`: EventCard, EventList, EventFilter, EventDetail.
+- `src/components/forms/EventForm.tsx`: ekleme ve güncelleme için ortak controlled form.
+- `src/context/EventsContext.tsx`: etkinlik listesi ve addEvent, updateEvent, deleteEvent.
+- `src/pages/`: adrese bağlı 10 sayfa.
+- `src/types/campus-event.ts`: Category, CampusEvent, EventFormData, EventFormErrors.
+- `src/utils/`: filter-events, format-date, validate-event.
+- `src/data/events.ts`: başlangıç etkinlik verisi.
+- `vercel.json`: sayfa yenilendiğinde route'ların 404 vermemesi için yönlendirme.
