@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import eventRoutes from "./routes/event-routes.js";
 
 const app = express();
 
@@ -14,6 +15,8 @@ app.get("/health", (req, res) => {
     student: "2311012017",
   });
 });
+
+app.use("/events", eventRoutes);
 
 // Hiçbir route eşleşmezse
 app.use((req, res) => {
