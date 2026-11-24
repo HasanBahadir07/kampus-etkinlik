@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "e852811d-0366-423c-a602-51d0b5d62a28",
     "name": "Kampüs API",
-    "description": "Sprint 7 · Express REST API · 6 istek",
+    "description": "Sprint 8 · Express + MongoDB (Mongoose) · 6 istek. Önce 2. isteği gönder: ilk etkinliğin id değerini eventId değişkenine yazar.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -12,12 +12,10 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:3000/health",
-          "protocol": "http",
+          "raw": "{{baseUrl}}/health",
           "host": [
-            "localhost"
+            "{{baseUrl}}"
           ],
-          "port": "3000",
           "path": [
             "health"
           ]
@@ -31,34 +29,43 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:3000/events",
-          "protocol": "http",
+          "raw": "{{baseUrl}}/events",
           "host": [
-            "localhost"
+            "{{baseUrl}}"
           ],
-          "port": "3000",
           "path": [
             "events"
           ]
         }
       },
-      "response": []
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"200 ve dizi\", () => { pm.response.to.have.status(200); pm.expect(pm.response.json()).to.be.an(\"array\"); });",
+              "const list = pm.response.json();",
+              "if (list.length) pm.collectionVariables.set(\"eventId\", list[0].id);"
+            ]
+          }
+        }
+      ]
     },
     {
-      "name": "3 · GET /events/event-2",
+      "name": "3 · GET /events/:id",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:3000/events/event-2",
-          "protocol": "http",
+          "raw": "{{baseUrl}}/events/{{eventId}}",
           "host": [
-            "localhost"
+            "{{baseUrl}}"
           ],
-          "port": "3000",
           "path": [
             "events",
-            "event-2"
+            "{{eventId}}"
           ]
         }
       },
@@ -70,12 +77,10 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:3000/events/yok",
-          "protocol": "http",
+          "raw": "{{baseUrl}}/events/yok",
           "host": [
-            "localhost"
+            "{{baseUrl}}"
           ],
-          "port": "3000",
           "path": [
             "events",
             "yok"
@@ -95,12 +100,10 @@
           }
         ],
         "url": {
-          "raw": "http://localhost:3000/events",
-          "protocol": "http",
+          "raw": "{{baseUrl}}/events",
           "host": [
-            "localhost"
+            "{{baseUrl}}"
           ],
-          "port": "3000",
           "path": [
             "events"
           ]
@@ -128,12 +131,10 @@
           }
         ],
         "url": {
-          "raw": "http://localhost:3000/events",
-          "protocol": "http",
+          "raw": "{{baseUrl}}/events",
           "host": [
-            "localhost"
+            "{{baseUrl}}"
           ],
-          "port": "3000",
           "path": [
             "events"
           ]
@@ -149,6 +150,16 @@
         }
       },
       "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "eventId",
+      "value": ""
     }
   ]
 }

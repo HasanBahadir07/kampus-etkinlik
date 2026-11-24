@@ -1,25 +1,41 @@
-import { events } from "../data/events.js";
+import mongoose from "mongoose";
+import Event from "../models/event.js";
+
+const notFound = (res) =>
+  res.status(404).json({ error: { message: "Event not found" } });
+
+const serverError = (res, err) => {
+  console.error(err);
+  res.status(500).json({ error: { message: "Database error" } });
+};
 
 // GET /events  (?category=Atölye isteğe bağlı)
-export function getEvents(req, res) {
-  const { category } = req.query;
-  const list = category
-    ? events.filter((e) => e.category === category)
-    : events;
-  res.json(list);
+export async function getEvents(req, res) {
+  try {
+    const { category } = req.query;
+    const filter = category ? { category } : {};
+    const list = await Event.find(filter).sort({ date: 1 });
+    res.json(list);
+  } catch (err) {
+    serverError(res, err);
+  }
 }
 
 // GET /events/:id
-export function getEventById(req, res) {
-  const event = events.find((e) => e.id === req.params.id);
-  if (!event) {
-    return res.status(404).json({ error: { message: "Event not found" } });
+export async function getEventById(req, res) {
+  // Geçersiz biçimdeki id'ler (ör. "yok") veritabanına hiç sorulmaz.
+  if (!mongoose.isValidObjectId(req.params.id)) return notFound(res);
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) return notFound(res);
+    res.json(event);
+  } catch (err) {
+    serverError(res, err);
   }
-  res.json(event);
 }
 
 // POST /events
-export function createEvent(req, res) {
+export async function createEvent(req, res) {
   const { title, category, capacity, date, time, location, description } =
     req.body ?? {};
 
@@ -29,17 +45,22 @@ export function createEvent(req, res) {
     });
   }
 
-  const newEvent = {
-    id: `event-${Date.now()}`,
-    title,
-    category,
-    date,
-    capacity: Number(capacity) || 0,
-    time: time ?? "",
-    location: location ?? "",
-    description: description ?? "",
-  };
-
-  events.push(newEvent);
-  res.status(201).json(newEvent);
+  try {
+    const event = await Event.create({
+      title,
+      category,
+      date,
+      capacity,
+      time,
+      location,
+      description,
+    });
+    res.status(201).json(event);
+  } catch (err) {
+    // Şema doğrulaması (ör. date biçimi, negatif capacity) → 400
+    if (err.name === "ValidationError") {
+      return res.status(400).json({ error: { message: err.message } });
+    }
+    serverError(res, err);
+  }
 }
