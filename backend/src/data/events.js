@@ -1,4 +1,4 @@
-// Bellek içi veri: sunucu yeniden başlayınca POST ile eklenenler kaybolur.
+// Test verisi: `npm run seed` bunları MongoDB'ye yükler (id'ler atılır, _id'yi MongoDB verir).
 export const events = [
   {
     id: "event-1",
