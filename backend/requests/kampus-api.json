@@ -21,7 +21,18 @@
           ]
         }
       },
-      "response": []
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"200 · ok\", () => { pm.response.to.have.status(200); pm.expect(pm.response.json().status).to.eql(\"ok\"); });"
+            ]
+          }
+        }
+      ]
     },
     {
       "name": "2 · GET /events",
@@ -69,7 +80,18 @@
           ]
         }
       },
-      "response": []
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"200 · istenen etkinlik\", () => { pm.response.to.have.status(200); pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get(\"eventId\")); });"
+            ]
+          }
+        }
+      ]
     },
     {
       "name": "4 · GET /events/yok (404)",
@@ -87,7 +109,18 @@
           ]
         }
       },
-      "response": []
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"404 · error\", () => { pm.response.to.have.status(404); pm.expect(pm.response.json()).to.have.property(\"error\"); });"
+            ]
+          }
+        }
+      ]
     },
     {
       "name": "5 · POST /events (tam body)",
@@ -118,7 +151,18 @@
           }
         }
       },
-      "response": []
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"201 · yeni id\", () => { pm.response.to.have.status(201); pm.expect(pm.response.json().id).to.be.a(\"string\"); pm.expect(pm.response.json().category).to.eql(\"Atölye\"); });"
+            ]
+          }
+        }
+      ]
     },
     {
       "name": "6 · POST /events (sadece title, 400)",
@@ -149,7 +193,18 @@
           }
         }
       },
-      "response": []
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"400 · error\", () => { pm.response.to.have.status(400); pm.expect(pm.response.json()).to.have.property(\"error\"); });"
+            ]
+          }
+        }
+      ]
     }
   ],
   "variable": [

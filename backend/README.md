@@ -57,7 +57,7 @@ Gerçek değerler `.env` dosyasında durur ve GitHub'a gönderilmez. Hangi deği
 | GET | `/events` | Listeyi getir, tarihe göre sıralı (`?category=Atölye` isteğe bağlı) | 200 | 500 | Sprint 8 · MongoDB |
 | GET | `/events/:id` | Tek etkinlik | 200 | 404, 500 | Sprint 8 · MongoDB |
 | POST | `/events` | Yeni etkinlik | 201 | 400, 500 | Sprint 8 · MongoDB |
-| PUT | `/events/:id` | Güncelle | 200 | 400, 404 | Sprint 9 |
+| PATCH | `/events/:id` | Güncelle | 200 | 400, 404 | Sprint 9 |
 | DELETE | `/events/:id` | Sil | 204 | 404 | Sprint 9 |
 
 Status code'lar: 200 tamam · 201 oluşturuldu · 204 içerik yok · 400 eksik/yanlış veri · 404 bulunamadı · 500 veritabanı hatası
@@ -116,5 +116,12 @@ backend/
 | 4 | GET `/events/yok` | 404 · error |
 | 5 | POST `/events` (tam body) | 201 · yeni `id` |
 | 6 | POST `/events` (sadece title) | 400 · error |
+
+Her isteğin içinde durum kodunu kontrol eden bir Postman testi var. Koleksiyon terminalden newman ile de çalışır (sunucu açıkken):
+
+```
+npm i -g newman
+newman run requests/kampus-api.json
+```
 
 Testten sonra `npm run seed` veritabanını yeniden 6 kayda döndürür.
