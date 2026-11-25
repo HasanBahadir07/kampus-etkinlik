@@ -23,4 +23,14 @@ app.use((req, res) => {
   res.status(404).json({ error: { message: "Route not found" } });
 });
 
+// Controller'lardan next(err) ile gelen hatalar
+app.use((err, req, res, next) => {
+  // Bozuk JSON gövdesi gibi istemci hataları (express.json → 400)
+  if (err.status && err.status < 500) {
+    return res.status(err.status).json({ error: { message: err.message } });
+  }
+  console.error(err);
+  res.status(500).json({ error: { message: "Database error" } });
+});
+
 export default app;
