@@ -1,8 +1,8 @@
-# Kampüs Etkinlikleri · Backend (Sprint 8)
+# Kampüs Etkinlikleri · Backend (Sprint 9)
 
 Hasan Bahadır Yıldız · 2311012017
 
-Etkinlikleri JSON olarak veren Node + Express REST API. Veriler MongoDB'de durur; uygulama veritabanıyla Mongoose üzerinden konuşur. Geliştirmede yerel MongoDB, canlıda MongoDB Atlas (Frankfurt, M0) kullanılır.
+Etkinlikleri JSON olarak veren Node + Express REST API. Sprint 9 ile tam CRUD: etkinlik eklenir, güncellenir, silinir, aranır; yaklaşan etkinlikler ayrı listelenir. Veriler MongoDB'de durur; uygulama veritabanıyla Mongoose üzerinden konuşur. Geliştirmede yerel MongoDB, canlıda MongoDB Atlas (Frankfurt, M0) kullanılır.
 
 ## Çalıştırma
 
@@ -34,31 +34,34 @@ Gerçek değerler `.env` dosyasında durur ve GitHub'a gönderilmez. Hangi deği
 
 ## Veri modeli
 
-`src/models/event.js` · koleksiyon: `events`
+`src/models/event-model.js` · koleksiyon: `events`
 
 | Alan | Tür | Kural |
 | ---- | --- | ----- |
 | `title` | String | zorunlu |
-| `category` | String | zorunlu |
-| `date` | String | zorunlu, `YYYY-MM-DD` |
+| `category` | String | zorunlu, `Seminer` · `Atölye` · `Söyleşi` · `Yarışma` |
+| `date` | Date | zorunlu; API'de `GG-AA-YYYY` (ör. `15-10-2026`) |
 | `time` | String | varsayılan `""` |
 | `capacity` | Number | varsayılan `0`, en az `0` |
 | `location` | String | varsayılan `""` |
 | `description` | String | varsayılan `""` |
 | `createdAt`, `updatedAt` | Date | Mongoose otomatik ekler |
 
-`_id`'yi MongoDB atar; API yanıtlarında `id` olarak döner (`__v` gösterilmez).
+`_id`'yi MongoDB atar ve yanıtlarda `_id` olarak döner.
+
+Tarih API'de `"15-10-2026"` biçiminde gelir ve gider, veritabanında gerçek `Date` olarak durur (`src/utils/date.js`: `parseDate` / `formatDate`). Metin olarak saklansaydı `"05-11-2026"` `"15-10-2026"`dan küçük sayılır, Kasım Ekim'den önce sıralanırdı. `"2026-12-20"` ya da `"31-02-2026"` gibi değerler 400 döner.
 
 ## REST sözleşmesi
 
 | Method | Endpoint | Amaç | Başarılı | Hata | Durum |
 | ------ | -------- | ---- | -------- | ---- | ----- |
-| GET | `/health` | Sunucu ayakta mı? | 200 | — | Sprint 7 |
-| GET | `/events` | Listeyi getir, tarihe göre sıralı (`?category=Atölye` isteğe bağlı) | 200 | 500 | Sprint 8 · MongoDB |
-| GET | `/events/:id` | Tek etkinlik | 200 | 404, 500 | Sprint 8 · MongoDB |
-| POST | `/events` | Yeni etkinlik | 201 | 400, 500 | Sprint 8 · MongoDB |
-| PATCH | `/events/:id` | Güncelle | 200 | 400, 404 | Sprint 9 |
-| DELETE | `/events/:id` | Sil | 204 | 404 | Sprint 9 |
+| GET | `/health` | Sunucu ayakta mı? | 200 | — | çalışıyor |
+| GET | `/events` | Liste, tarihe göre sıralı (`?search=` & `?category=` isteğe bağlı) | 200 | — | çalışıyor |
+| GET | `/events/upcoming` | Bugün ve sonrası, en yakın önce | 200 | — | çalışıyor |
+| GET | `/events/:id` | Tek etkinlik | 200 | 404 | çalışıyor |
+| POST | `/events` | Yeni etkinlik | 201 | 400 | çalışıyor |
+| PATCH | `/events/:id` | Sadece gönderilen alanları güncelle, güncel kaydı döndür | 200 | 400, 404 | çalışıyor |
+| DELETE | `/events/:id` | Sil, gövde yok | 204 | 404 | çalışıyor |
 
 Status code'lar: 200 tamam · 201 oluşturuldu · 204 içerik yok · 400 eksik/yanlış veri · 404 bulunamadı · 500 veritabanı hatası
 
@@ -70,20 +73,52 @@ Bütün hatalar aynı biçimde döner:
 { "error": { "message": "Event not found" } }
 ```
 
-Geçersiz biçimdeki id'ler (ör. `/events/yok`) de 404 döner.
+Geçersiz biçimdeki ya da olmayan id'ler (ör. `/events/yok`, silinmiş id) her endpoint'te 404 döner.
 
 ### POST /events gövdesi
 
-`title`, `category` ve `date` zorunlu; diğer alanlar isteğe bağlı. Şemaya uymayan veri (ör. `date: "1 Aralık"`, negatif `capacity`) 400 döner.
+`title`, `category` ve `date` zorunlu; diğer alanlar isteğe bağlı. Şemaya uymayan veri (ör. `date: "2026-12-01"`, `category: "Parti"`, negatif `capacity`) 400 döner.
 
 ```json
 {
   "title": "Git Atölyesi",
   "category": "Atölye",
-  "date": "2026-12-01",
+  "date": "01-12-2026",
   "capacity": 30
 }
 ```
+
+### PATCH /events/:id
+
+Sadece gönderilen alanlar değişir; yanıt kaydın güncel hâlidir. Şema kuralları (enum, trim, min, tarih) güncellemede de çalışır.
+
+| Body | Sonuç |
+| ---- | ----- |
+| `{ "capacity": 55 }` | 200 · sadece capacity değişti |
+| `{ "title": "  Yeni Başlık  " }` | 200 · `"Yeni Başlık"` (trim) |
+| `{ }` | 400 · Body is empty |
+| `{ "category": "Parti" }` | 400 · enum dışında |
+| `{ "_id": "abc" }` | 400 · _id cannot be changed (`createdAt`, `updatedAt`, `__v` da) |
+| olmayan id | 404 · Event not found |
+
+### DELETE /events/:id
+
+Silinince `204 No Content`, yanıt gövdesi yok. Aynı id ikinci kez silinmek istenirse 404.
+
+### Arama ve filtre
+
+| Adres | Filtre |
+| ----- | ------ |
+| `/events` | hepsi |
+| `/events?category=Atölye` | kategori birebir |
+| `/events?search=atölye` | başlıkta geçen, büyük/küçük harf fark etmez (`$regex`, `$options: "i"`) |
+| `/events?search=atölye&category=Atölye` | ikisi birden |
+
+Aramadaki `( * ?` gibi özel işaretler kaçırılır; `?search=(` 500 değil boş liste döner.
+
+### GET /events/upcoming
+
+Tarihi bugün ya da sonrası olan etkinlikler (`date: { $gte: bugünün başı }`), en yakın önce. Seed'deki iki geçmiş etkinlik (Robotik Atölyesi 15-10-2026, Web Tasarım Atölyesi 05-11-2026) bu listede yer almaz. Route, `/:id`'den önce tanımlıdır; yoksa `upcoming` bir id sanılıp 404 dönerdi.
 
 ## Klasör yapısı
 
@@ -106,22 +141,29 @@ backend/
 
 ## Test
 
-`requests/kampus-api.json` dosyasını Postman'e içe aktar (Import). Adres `baseUrl` değişkeninde (`http://localhost:3000`). İstekleri sırayla gönder; 2. istek ilk etkinliğin `id`'sini `eventId` değişkenine yazar, 3. istek onu kullanır.
+`requests/kampus-api.json` Sprint 9 collection'ıdır (18 istek, 45 test). Postman › Import ile içe aktar; adres `baseUrl` değişkeninde (`http://localhost:3000`).
+
+```
+npm run seed
+npm run dev
+```
+
+Sonra collection'a sağ tık › Run collection › Run. Hedef: 18 istek, 45 test, hepsi yeşil. Sonuç Runner › Export Results ile `requests/run-results.json` olarak kaydedilir.
+
+02. istek listedeki ilk `_id`'yi, 05. istek yeni oluşan kaydın `_id`'sini kaydeder. PATCH ve DELETE o yeni kayıtla çalışır, seed verisi bozulmaz; istediğin kadar tekrar çalıştırılabilir.
 
 | # | İstek | Beklenen |
 | - | ----- | -------- |
-| 1 | GET `/health` | 200 · ok + student |
-| 2 | GET `/events` | 200 · 6 kayıt |
-| 3 | GET `/events/{{eventId}}` | 200 · o etkinlik |
-| 4 | GET `/events/yok` | 404 · error |
-| 5 | POST `/events` (tam body) | 201 · yeni `id` |
-| 6 | POST `/events` (sadece title) | 400 · error |
+| 01–04 | health, liste, tek kayıt, olmayan kayıt | 200, 200, 200, 404 |
+| 05–07 | POST: tam body, eksik veri, yanlış tarih biçimi | 201, 400, 400 |
+| 08–13 | PATCH: capacity, tarih, boş body, geçersiz kategori, _id, olmayan id | 200, 200, 400, 400, 400, 404 |
+| 14–15 | `?search=atölye`, `?search=atölye&category=Atölye` | 200 |
+| 16 | `/events/upcoming` | 200 · geçmiş tarihli yok, sıralı |
+| 17–18 | DELETE, aynı kaydı tekrar DELETE | 204, 404 |
 
-Her isteğin içinde durum kodunu kontrol eden bir Postman testi var. Koleksiyon terminalden newman ile de çalışır (sunucu açıkken):
+Terminalden (sunucu açıkken):
 
 ```
 npm i -g newman
-newman run requests/kampus-api.json
+newman run https://webdersi.vercel.app/test.json
 ```
-
-Testten sonra `npm run seed` veritabanını yeniden 6 kayda döndürür.
