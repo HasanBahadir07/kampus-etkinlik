@@ -1,15 +1,23 @@
 import mongoose from "mongoose";
+import { formatDate, parseDate } from "../utils/date.js";
+
+export const CATEGORIES = ["Seminer", "Atölye", "Söyleşi", "Yarışma"];
 
 // Etkinlik dokümanının şeması. _id'yi MongoDB kendisi atar.
 const eventSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
-    category: { type: String, required: true, trim: true },
-    date: {
+    category: {
       type: String,
       required: true,
-      match: [/^\d{4}-\d{2}-\d{2}$/, "date YYYY-MM-DD biçiminde olmalı"],
+      trim: true,
+      enum: {
+        values: CATEGORIES,
+        message: `category şunlardan biri olmalı: ${CATEGORIES.join(", ")}`,
+      },
     },
+    // API'de "GG-AA-YYYY", veritabanında Date: sıralama ve $gte tarihe göre çalışır.
+    date: { type: Date, required: true, set: parseDate, get: formatDate },
     time: { type: String, default: "" },
     capacity: { type: Number, default: 0, min: 0 },
     location: { type: String, default: "" },
@@ -17,15 +25,8 @@ const eventSchema = new mongoose.Schema(
   },
   {
     timestamps: true, // createdAt, updatedAt
-    // JSON'a çevirirken _id → id, __v gizli
-    toJSON: {
-      virtuals: true,
-      versionKey: false,
-      transform: (doc, ret) => {
-        delete ret._id;
-        return ret;
-      },
-    },
+    toJSON: { getters: true }, // date yanıtta "GG-AA-YYYY" görünsün
+    id: false, // _id dışında ayrıca "id" alanı ekleme
   },
 );
 

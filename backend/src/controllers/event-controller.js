@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Event from "../models/event.js";
+import Event from "../models/event-model.js";
 
 const notFound = (res) =>
   res.status(404).json({ error: { message: "Event not found" } });

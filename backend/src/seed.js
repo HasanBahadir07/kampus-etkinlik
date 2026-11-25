@@ -7,15 +7,14 @@ if (process.argv.includes("--local")) {
   delete process.env.MONGODB_URI; // db.js yerel adrese düşer
 }
 
-const { connectDB, default: mongoose } = await import("../models/db.js");
-const { default: Event } = await import("../models/event.js");
-const { events } = await import("./events.js");
+const { connectDB, default: mongoose } = await import("./config/db.js");
+const { default: Event } = await import("./models/event-model.js");
+const { events } = await import("./data/seed-events.js");
 
 try {
   await connectDB();
-  const docs = events.map(({ id, ...rest }) => rest); // eski "event-1" id'leri atılır
   const { deletedCount } = await Event.deleteMany({});
-  const inserted = await Event.insertMany(docs);
+  const inserted = await Event.insertMany(events);
   console.log(`${deletedCount} etkinlik silindi, ${inserted.length} etkinlik eklendi.`);
 } catch (err) {
   console.error("Seed başarısız:", err.message);

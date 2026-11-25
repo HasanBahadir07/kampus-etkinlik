@@ -9,7 +9,8 @@ const safeURI = dbURI.replace(/\/\/[^@]*@/, "//***@");
 
 // Bağlantı olayları
 mongoose.connection.on("connected", () => {
-  console.log(`Mongoose bağlandı: ${safeURI}`);
+  const where = dbURI === LOCAL_URI ? "yerel" : "Atlas";
+  console.log(`MongoDB bağlandı (${where}): ${safeURI}`);
 });
 mongoose.connection.on("error", (err) => {
   console.log(`Mongoose bağlantı hatası: ${err.message}`);

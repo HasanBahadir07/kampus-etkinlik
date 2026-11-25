@@ -1,12 +1,12 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Kampüs Etkinlikleri REST API (Sprint 8 · MongoDB)",
+  "description": "Kampüs Etkinlikleri REST API (Sprint 9 · Tam CRUD)",
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
-    "seed": "node src/data/seed.js",
-    "seed:local": "node src/data/seed.js --local"
+    "seed": "node src/seed.js",
+    "seed:local": "node src/seed.js --local"
   },
   "keywords": [],
   "author": "",
